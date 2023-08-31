@@ -1,5 +1,9 @@
-
+cmake_minimum_required(VERSION 3.21 FATAL_ERROR)
 project(opensk_tests LANGUAGES CXX)
+
+if (NOT DEFINED sk_source_dir)
+    message(FATAL_ERROR "cannot found opensk sources - sk_source_dir not set")
+endif()
 
 add_library(sk_tests_setup INTERFACE)
 target_compile_features(sk_tests_setup INTERFACE cxx_std_23)
