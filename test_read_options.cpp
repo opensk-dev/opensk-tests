@@ -1,8 +1,7 @@
 # include <options.hpp>
 # include <config.hpp>
 
-# define BOOST_TEST_MAIN
-# include <boost/test/unit_test.hpp>
+# include <test/common.hpp>
 
 # include <iostream>
 # include <sstream>
@@ -65,7 +64,7 @@ BOOST_AUTO_TEST_CASE(check_option_version) {
     BOOST_REQUIRE(options.has_value() == false);
 
     BOOST_CHECK(output.contains("opensk"));
-    BOOST_CHECK(output.contains(sk::version_string()));
+    BOOST_CHECK(output.contains(sk::config::version_string()));
 }
 
 // TODO: check invalid cases

@@ -31,7 +31,6 @@ Decorator provide(const auto& decorator, Args&& ... args) {
 }
 
 void require_nothrow(const Delegate& delegate) {
-    std::cout << "require nothrow\n";
     BOOST_REQUIRE_NO_THROW(delegate(););
 }
 
@@ -50,7 +49,7 @@ void run_with_timeout(const Delegate& delegate, std::chrono::milliseconds timeou
     auto status = future.wait_for(timeout);
     if (status == std::future_status::timeout) {
         auto error_message = std::format("Timeout: the test waiting time is more than {}ms", timeout.count());
-        BOOST_TEST_ERROR(error_message);
+        BOOST_TEST_FAIL(error_message);
         throw std::runtime_error(error_message);
     }
 }
