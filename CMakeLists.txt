@@ -35,3 +35,7 @@ add_test(NAME test_frames COMMAND sk_test_frames)
 add_executable(sk_test_runtime_arena "test_runtime_arena.cpp")
 target_link_libraries(sk_test_runtime_arena sk_tests_setup)
 add_test(NAME test_runtime_arena COMMAND sk_test_runtime_arena)
+
+add_executable(sk_test_math "test_math.cpp")
+target_link_libraries(sk_test_math sk_tests_setup)
+add_test(NAME test_math COMMAND sk_test_math)
