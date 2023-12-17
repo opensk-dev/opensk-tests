@@ -16,7 +16,7 @@ BOOST_AUTO_TEST_CASE(check_default_behaviour) {
 
     std::optional<sk::ConfigureOptions> options;
 
-    BOOST_REQUIRE_NO_THROW(options = sk::read_options(std::size(argv), argv));
+    BOOST_REQUIRE_NO_THROW(options = sk::read_options(static_cast<int>(std::size(argv)), argv));
     BOOST_REQUIRE(options.has_value() == false);
 }
 
@@ -37,7 +37,7 @@ BOOST_AUTO_TEST_CASE(check_option_help) {
     };
 
     std::optional<sk::ConfigureOptions> options;
-    std::string output = run_test(std::size(argv), argv, options);
+    std::string output = run_test(static_cast<int>(std::size(argv)), argv, options);
 
     BOOST_REQUIRE(options.has_value() == false);
 
@@ -59,7 +59,7 @@ BOOST_AUTO_TEST_CASE(check_option_version) {
     };
 
     std::optional<sk::ConfigureOptions> options;
-    std::string output = run_test(std::size(argv), argv, options);
+    std::string output = run_test(static_cast<int>(std::size(argv)), argv, options);
 
     BOOST_REQUIRE(options.has_value() == false);
 
