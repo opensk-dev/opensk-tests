@@ -1,9 +1,9 @@
-# ifndef SK_TESTS_COMMON_DECORATORS_HPP_
-# define SK_TESTS_COMMON_DECORATORS_HPP_
+#ifndef SK_TESTS_COMMON_DECORATORS_HPP
+#define SK_TESTS_COMMON_DECORATORS_HPP
 
-# include <functional>
-# include <chrono>
-# include <future>
+#include <chrono>
+#include <functional>
+#include <future>
 
 namespace sk::test {
 
@@ -11,20 +11,21 @@ using Delegate = std::function<void()>;
 using Decorator = std::function<void(const Delegate&)>;
 
 Delegate decorate(const Delegate& delegate, const Decorator& decorator) {
-    return [=]() { decorator(delegate); };
+    return [=]() {
+        decorator(delegate);
+    };
 }
 
 template<typename... Decorators>
 Delegate decorate(
-    const Delegate& delegate,
-    const Decorator& decorator1, const Decorator& decorator2,
-    const Decorators& ... other_decorators
-) {
+        const Delegate& delegate,
+        const Decorator& decorator1, const Decorator& decorator2,
+        const Decorators&... other_decorators) {
     return decorate(decorate(delegate, decorator1), decorator2, other_decorators...);
 }
 
 template<typename... Args>
-Decorator provide(const auto& decorator, Args&& ... args) {
+Decorator provide(const auto& decorator, Args&&... args) {
     return [decorator, ... args = std::forward<Args>(args)](const Delegate& delegate) mutable {
         decorator(delegate, std::forward<Args>(args)...);
     };
@@ -54,6 +55,6 @@ void run_with_timeout(const Delegate& delegate, std::chrono::milliseconds timeou
     }
 }
 
-} // sk::test
+}// namespace sk::test
 
-# endif // SK_TESTS_COMMON_DECORATORS_HPP_
+#endif// SK_TESTS_COMMON_DECORATORS_HPP

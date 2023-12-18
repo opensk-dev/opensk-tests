@@ -1,14 +1,14 @@
-# include <core/frame.hpp>
+#include <core/frame.hpp>
 
-# include <test/common.hpp>
+#include <test/common.hpp>
 
-# include <vector>
-# include <stack>
+#include <stack>
+#include <vector>
 
 BOOST_AUTO_TEST_SUITE(frames_test_suite)
 
 class TestFrame : public sk::Frame {
-public:
+  public:
     void initialize() override {
         Frame::initialize();
         history_.push_back(ActionsEnum::initialize);
@@ -35,7 +35,7 @@ public:
 
     [[nodiscard]] bool is_valid() const {
         std::stack<StatesEnum> state;
-        for (auto& action : history_) {
+        for (auto& action: history_) {
             switch (action) {
                 case ActionsEnum::initialize: {
                     if (state.empty()) {
@@ -74,7 +74,7 @@ public:
         return true;
     }
 
-private:
+  private:
     enum class StatesEnum {
         initialized = 0,
         enabled = 1,
@@ -101,9 +101,8 @@ BOOST_AUTO_TEST_CASE(test_lifecycle) {
     };
 
     auto delegate = sk::test::decorate(
-        test,
-        sk::test::require_nothrow
-    );
+            test,
+            sk::test::require_nothrow);
 
     std::invoke(delegate);
 }
@@ -127,9 +126,8 @@ BOOST_AUTO_TEST_CASE(test_frame_holder) {
     };
 
     auto delegate = sk::test::decorate(
-        test,
-        sk::test::require_nothrow
-    );
+            test,
+            sk::test::require_nothrow);
 
     std::invoke(delegate);
 }

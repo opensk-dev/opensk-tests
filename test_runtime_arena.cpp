@@ -1,17 +1,17 @@
-# include <core/runtime_arena.hpp>
+#include <core/runtime_arena.hpp>
 
-# include <test/common.hpp>
+#include <test/common.hpp>
 
-# include <array>
-# include <format>
-# include <iostream>
-# include <thread>
-# include <vector>
+#include <array>
+#include <format>
+#include <iostream>
+#include <thread>
+#include <vector>
 
 BOOST_AUTO_TEST_SUITE(runtime_arena_test_suite)
 
 class TestTask : public sk::Task {
-public:
+  public:
     TestTask(int i, bool& done)
         : i_(i), done_(done) {
     }
@@ -21,13 +21,13 @@ public:
         done_ = true;
     }
 
-private:
+  private:
     int i_ = 0;
     bool& done_;
 };
 
 class TasksGroup {
-public:
+  public:
     TasksGroup() {
         tasks_.clear();
         tasks_.reserve(tasks_count_);
@@ -37,7 +37,7 @@ public:
     };
 
     void run(sk::RuntimeArena& arena) {
-        for (auto& task : tasks_) {
+        for (auto& task: tasks_) {
             arena.push_task(&task);
         }
     }
@@ -50,14 +50,14 @@ public:
         };
     };
 
-private:
+  private:
     static constexpr int tasks_count_ = 10;
     std::array<bool, tasks_count_> tasks_done_{};
     std::vector<TestTask> tasks_{};
 
     bool check_that_all_tasks_done() {
         bool complete = true;
-        for (auto& done : tasks_done_) {
+        for (auto& done: tasks_done_) {
             complete = complete && done;
         }
         return complete;
@@ -65,70 +65,70 @@ private:
 };
 
 class TestDefaultBehaviour : public sk::test::TestSuite {
-public:
+  public:
     void run_tests() override {
         test_case("unmanaged mode", test_unmanaged_mode());
         test_case("managed mode", test_managed_mode());
         test_case("captured mode", test_captured_mode());
     };
 
-private:
+  private:
     TasksGroup tasks_group_{};
 
     sk::test::Delegate test_unmanaged_mode_ =
-        [this]() {
-            sk::RuntimeArena arena{};
-            tasks_group_.run(arena);
-        };
+            [this]() {
+                sk::RuntimeArena arena{};
+                tasks_group_.run(arena);
+            };
 
     [[nodiscard]] sk::test::Delegate test_unmanaged_mode() {
         using namespace std::chrono_literals;
         return sk::test::decorate(
-            test_unmanaged_mode_,
-            sk::test::require_nothrow,
-            sk::test::provide(sk::test::run_with_timeout, 10ms),
-            tasks_group_.require_tasks_done(),
-            sk::test::provide(sk::test::timer, std::string("test_unmanaged_mode")));
+                test_unmanaged_mode_,
+                sk::test::require_nothrow,
+                sk::test::provide(sk::test::run_with_timeout, 10ms),
+                tasks_group_.require_tasks_done(),
+                sk::test::provide(sk::test::timer, std::string("test_unmanaged_mode")));
     }
 
     sk::test::Delegate test_managed_mode_ =
-        [this]() {
-            sk::RuntimeArena arena{sk::RuntimeArena::Managed{}};
-            arena.start();
-            tasks_group_.run(arena);
-            arena.stop();
-        };
+            [this]() {
+                sk::RuntimeArena arena{sk::RuntimeArena::Managed{}};
+                arena.start();
+                tasks_group_.run(arena);
+                arena.stop();
+            };
 
     [[nodiscard]] sk::test::Delegate test_managed_mode() {
         using namespace std::chrono_literals;
         return sk::test::decorate(
-            test_managed_mode_,
-            sk::test::require_nothrow,
-            sk::test::provide(sk::test::run_with_timeout, 10ms),
-            tasks_group_.require_tasks_done(),
-            sk::test::provide(sk::test::timer, std::string("test_managed_mode")));
+                test_managed_mode_,
+                sk::test::require_nothrow,
+                sk::test::provide(sk::test::run_with_timeout, 10ms),
+                tasks_group_.require_tasks_done(),
+                sk::test::provide(sk::test::timer, std::string("test_managed_mode")));
     }
 
     sk::test::Delegate test_captured_mode_ =
-        [this]() {
-            sk::RuntimeArena arena{sk::RuntimeArena::Managed{}};
-            std::thread controller(
-                [&]() {
-                    tasks_group_.run(arena);
-                    arena.stop();
-                });
-            arena.capture();
-            controller.join();
-        };
+            [this]() {
+                sk::RuntimeArena arena{sk::RuntimeArena::Managed{}};
+                std::thread controller(
+                        [&]() {
+                            tasks_group_.run(arena);
+                            arena.stop();
+                        });
+                arena.capture();
+                controller.join();
+            };
 
     [[nodiscard]] sk::test::Delegate test_captured_mode() {
         using namespace std::chrono_literals;
         return sk::test::decorate(
-            test_captured_mode_,
-            sk::test::require_nothrow,
-            sk::test::provide(sk::test::run_with_timeout, 10ms),
-            tasks_group_.require_tasks_done(),
-            sk::test::provide(sk::test::timer, std::string("test_captured_mode")));
+                test_captured_mode_,
+                sk::test::require_nothrow,
+                sk::test::provide(sk::test::run_with_timeout, 10ms),
+                tasks_group_.require_tasks_done(),
+                sk::test::provide(sk::test::timer, std::string("test_captured_mode")));
     }
 };
 
@@ -138,29 +138,29 @@ BOOST_AUTO_TEST_CASE(test_default_behaviour) {
 }
 
 class TestManagedMode : public sk::test::TestSuite {
-public:
+  public:
     void run_tests() override {
         test_case("managed mode: prev queue access", test_prev_queue_access());
     }
 
-private:
+  private:
     TasksGroup tasks_group_{};
 
     sk::test::Delegate test_prev_queue_access_ =
-        [this]() {
-            sk::RuntimeArena arena{sk::RuntimeArena::Managed{}};
-            tasks_group_.run(arena);
-            arena.start();
-        };
+            [this]() {
+                sk::RuntimeArena arena{sk::RuntimeArena::Managed{}};
+                tasks_group_.run(arena);
+                arena.start();
+            };
 
     [[nodiscard]] sk::test::Delegate test_prev_queue_access() {
         using namespace std::chrono_literals;
         return sk::test::decorate(
-            test_prev_queue_access_,
-            sk::test::require_nothrow,
-            sk::test::provide(sk::test::run_with_timeout, 10ms),
-            tasks_group_.require_tasks_done(),
-            sk::test::provide(sk::test::timer, std::string("test_prev_queue_access")));
+                test_prev_queue_access_,
+                sk::test::require_nothrow,
+                sk::test::provide(sk::test::run_with_timeout, 10ms),
+                tasks_group_.require_tasks_done(),
+                sk::test::provide(sk::test::timer, std::string("test_prev_queue_access")));
     }
 };
 
@@ -170,35 +170,35 @@ BOOST_AUTO_TEST_CASE(test_managed_mode) {
 }
 
 class TestCapturedMode : public sk::test::TestSuite {
-public:
+  public:
     void run_tests() override {
         test_case("captured mode: prev queue access", test_prev_queue_access());
         test_case("captured mode: test inner stop", test_inner_stop());
     }
 
-private:
+  private:
     TasksGroup tasks_group_{};
 
     sk::test::Delegate test_prev_queue_access_ =
-        [this]() {
-            sk::RuntimeArena arena{sk::RuntimeArena::Managed{}};
-            tasks_group_.run(arena);
-            arena.stop_in_future();
-            arena.capture();
-        };
+            [this]() {
+                sk::RuntimeArena arena{sk::RuntimeArena::Managed{}};
+                tasks_group_.run(arena);
+                arena.stop_in_future();
+                arena.capture();
+            };
 
     [[nodiscard]] sk::test::Delegate test_prev_queue_access() {
         using namespace std::chrono_literals;
         return sk::test::decorate(
-            test_prev_queue_access_,
-            sk::test::require_nothrow,
-            sk::test::provide(sk::test::run_with_timeout, 10ms),
-            tasks_group_.require_tasks_done(),
-            sk::test::provide(sk::test::timer, std::string("test_prev_queue_access")));
+                test_prev_queue_access_,
+                sk::test::require_nothrow,
+                sk::test::provide(sk::test::run_with_timeout, 10ms),
+                tasks_group_.require_tasks_done(),
+                sk::test::provide(sk::test::timer, std::string("test_prev_queue_access")));
     }
 
     class InnerStopTask : public sk::Task {
-    public:
+      public:
         explicit InnerStopTask(sk::RuntimeArena& arena)
             : arena_(arena) {
         }
@@ -214,27 +214,27 @@ private:
             return valid_;
         }
 
-    private:
+      private:
         bool valid_ = false;
         sk::RuntimeArena& arena_;
     };
 
     sk::test::Delegate test_inner_stop_ =
-        []() {
-            sk::RuntimeArena arena{sk::RuntimeArena::Managed{}};
-            InnerStopTask task(arena);
-            arena.push_task(&task);
-            arena.capture();
-            BOOST_REQUIRE_EQUAL(task.is_valid(), true);
-        };
+            []() {
+                sk::RuntimeArena arena{sk::RuntimeArena::Managed{}};
+                InnerStopTask task(arena);
+                arena.push_task(&task);
+                arena.capture();
+                BOOST_REQUIRE_EQUAL(task.is_valid(), true);
+            };
 
     [[nodiscard]] sk::test::Delegate test_inner_stop() {
         using namespace std::chrono_literals;
         return sk::test::decorate(
-            test_inner_stop_,
-            sk::test::require_nothrow,
-            sk::test::provide(sk::test::run_with_timeout, 10ms),
-            sk::test::provide(sk::test::timer, std::string("test_inner_stop")));
+                test_inner_stop_,
+                sk::test::require_nothrow,
+                sk::test::provide(sk::test::run_with_timeout, 10ms),
+                sk::test::provide(sk::test::timer, std::string("test_inner_stop")));
     }
 };
 

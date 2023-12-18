@@ -6,7 +6,7 @@ if(NOT DEFINED sk_source_dir)
 endif()
 
 add_library(sk_tests_setup INTERFACE)
-target_link_libraries(sk_tests_setup INTERFACE opensk_setup)
+target_link_libraries(sk_tests_setup INTERFACE opensk_setup compile_flags_setup)
 
 set(sk_tests_include_dir ${CMAKE_CURRENT_SOURCE_DIR}/common/include)
 target_include_directories(sk_tests_setup INTERFACE "$<BUILD_INTERFACE:${sk_tests_include_dir}>")

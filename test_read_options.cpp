@@ -1,17 +1,17 @@
-# include <options.hpp>
-# include <config.hpp>
+#include <config.hpp>
+#include <options.hpp>
 
-# include <test/common.hpp>
+#include <test/common.hpp>
 
-# include <iostream>
-# include <sstream>
+#include <iostream>
+#include <sstream>
 
 BOOST_AUTO_TEST_SUITE(read_options_test_suite)
 
 BOOST_AUTO_TEST_CASE(check_default_behaviour) {
     const char* argv[] = {
-        "Z:/invalid_path",
-        "--help",
+            "Z:/invalid_path",
+            "--help",
     };
 
     std::optional<sk::ConfigureOptions> options;
@@ -32,8 +32,8 @@ std::string run_test(const int argc, const char* argv[], std::optional<sk::Confi
 
 BOOST_AUTO_TEST_CASE(check_option_help) {
     const char* argv[] = {
-        "Z:/invalid_path",
-        "--help",
+            "Z:/invalid_path",
+            "--help",
     };
 
     std::optional<sk::ConfigureOptions> options;
@@ -54,8 +54,8 @@ BOOST_AUTO_TEST_CASE(check_option_help) {
 
 BOOST_AUTO_TEST_CASE(check_option_version) {
     const char* argv[] = {
-        "Z:/invalid_path",
-        "--version",
+            "Z:/invalid_path",
+            "--version",
     };
 
     std::optional<sk::ConfigureOptions> options;
